@@ -1,4 +1,3 @@
-// src/sections/FAQSection.jsx
 import React from 'react';
 import FAQItem from '../components/FAQItem';
 
@@ -12,8 +11,9 @@ export default function FAQSection() {
   ];
 
   return (
-    <section className="bg-[#0B0B0B] py-10 px-10">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <section id="faq" className="bg-[#0B0B0B] py-10 md:py-20 px-4 md:px-10">
+      {/* max-w-4xl prevents the cards from stretching too wide on PC */}
+      <div className="max-w-4xl mx-auto space-y-4 md:space-y-5">
         {faqs.map((q, index) => (
           <FAQItem key={index} question={q} />
         ))}
