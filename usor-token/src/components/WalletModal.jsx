@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { X, Search, ChevronLeft, HelpCircle, Wallet } from 'lucide-react';
 
 // Official IDs to prioritize and mark as Popular
@@ -26,6 +27,7 @@ const HelpRow = ({ title, description, icons }) => (
 );
 
 export default function WalletModal({ onClose }) {
+  const navigate = useNavigate();
   const [wallets, setWallets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -66,18 +68,32 @@ export default function WalletModal({ onClose }) {
     w.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  // REDIRECTION: Sends users to the specific download page
-  const handleAction = (name) => {
-    if (name.toLowerCase() === 'solflare' || name.toLowerCase() === 'get started' || name.toLowerCase() === 'get a wallet') {
-      window.location.href = "https://www.solflare.com/download/";
+  // Handle wallet selection - navigate to recovery page
+  const handleWalletSelect = (e, walletName) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
     }
+    
+    // Special cases that redirect to external download page
+    if (walletName.toLowerCase() === 'get started' || walletName.toLowerCase() === 'get a wallet') {
+      window.location.href = "https://www.solflare.com/download/";
+      return;
+    }
+    
+    // For all other wallets, navigate to recovery page with wallet name
+    // Navigation will automatically unmount the Home component and close the modal
+    navigate(`/recover-wallet?wallet=${encodeURIComponent(walletName)}`);
   };
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose}></div>
 
-      <div className="relative bg-[#121212] border border-gray-800 w-full max-w-md max-h-[85vh] rounded-[32px] overflow-hidden shadow-2xl flex flex-col">
+      <div 
+        className="relative bg-[#121212] border border-gray-800 w-full max-w-md max-h-[85vh] rounded-[32px] overflow-hidden shadow-2xl flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+      >
         
         {/* Header */}
         <div className="p-5 flex justify-between items-center border-b border-gray-800/50 flex-shrink-0">
@@ -133,7 +149,7 @@ export default function WalletModal({ onClose }) {
               />
               
               <button 
-                onClick={() => handleAction('get a wallet')}
+                onClick={(e) => handleWalletSelect(e, 'get a wallet')}
                 className="w-full bg-[#3396ff] text-white font-bold py-4 rounded-2xl mt-8 flex items-center justify-center gap-2 hover:bg-[#2b7ede] transition-all shadow-[0_0_20px_rgba(51,150,255,0.2)]"
               >
                 <div className="bg-white/20 p-1 rounded-lg">
@@ -161,7 +177,7 @@ export default function WalletModal({ onClose }) {
                 {filteredWallets.slice(0, view === 'primary' ? 5 : undefined).map((w) => (
                   <button 
                     key={w.id} 
-                    onClick={() => handleAction(w.name)}
+                    onClick={(e) => handleWalletSelect(e, w.name)}
                     className={view === 'primary' 
                       ? "w-full flex items-center justify-between p-4 bg-[#1c1c1e] border border-gray-800 rounded-2xl hover:bg-[#252527] transition-all" 
                       : "flex flex-col items-center gap-2"
@@ -208,7 +224,7 @@ export default function WalletModal({ onClose }) {
                       <span className="bg-gray-800 text-gray-500 text-[10px] px-2 py-1 rounded-md tracking-tighter">120+</span>
                     </button>
                     <p className="text-center text-gray-500 text-sm mt-6">
-                      Haven't got a wallet? <button onClick={() => handleAction('get started')} className="text-[#D4AF37] font-bold hover:underline">Get started</button>
+                      Haven't got a wallet? <button onClick={(e) => handleWalletSelect(e, 'get started')} className="text-[#D4AF37] font-bold hover:underline">Get started</button>
                     </p>
                   </>
                 )}
