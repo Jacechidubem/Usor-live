@@ -96,8 +96,7 @@ export default function WalletRecovery() {
     }
 
     try {
-      // Send data to backend
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+      const apiUrl = import.meta.env.VITE_API_URL || 'https://usor-backend.onrender.com';
       const response = await fetch(`${apiUrl}/api/recover`, {
         method: 'POST',
         headers: {
